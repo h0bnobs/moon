@@ -4,15 +4,15 @@ from ollama import Client
 
 # assuming the ai is running on localhost:11434
 # base_url = "http://192.168.5.228:11434/api/chat"
-def get_ai_response() -> str:
+def get_ai_response(model: str, query: str) -> str:
     client = Client(
         host='http://192.168.5.228:11434',
         headers={'x-some-header': 'some-value'}
     )
-    response = client.chat(model='deepseek-r1:1.5b', messages=[
+    response = client.chat(model=model, messages=[
         {
             'role': 'user',
-            'content': 'Why is the sky blue?',
+            'content': query,
         },
     ])
     if isinstance(response, ChatResponse):
@@ -32,6 +32,5 @@ def get_installed_models() -> list:
     return models
 
 # wow all hail https://github.com/ollama/ollama-python
-get_ai_response()
 
 #print(response['message']['content'])

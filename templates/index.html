@@ -24,10 +24,16 @@
 <body>
     <h3>Welcome to deepseek running on the old pc!</h3>
     <img src="../static/r.png" style="width: 166px; height: 214px"><br>
+    <form id="queryForm" method="POST" action="/query-ai">
     <label for="modelDropdown">Select a model:</label>
-    <select id="modelDropdown">
+    <select id="modelDropdown" name="model">
+        <option value="" disabled selected>Loading models...</option>
     </select>
     <br>
-    <input type="text">
+    <label for="inputText">Enter your query:</label>
+    <input id="inputText" name="query" type="text" required>
+    <br>
+    <button type="submit">Submit</button>
+    </form>
 </body>
 </html>
