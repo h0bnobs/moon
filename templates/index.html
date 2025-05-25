@@ -170,7 +170,6 @@
       historyDiv.appendChild(userMsg);
 
       const res = await fetch('/query-ai', { method: 'POST', body: formData });
-      inputText.value = '';
       const data = await res.json();
       const cleanResponse = data.response.replace(/<think>/gi, '').replace(/<\/think>/gi, '');
 
@@ -181,7 +180,7 @@
 
       loading.classList.add('hidden');
       submitBtn.disabled = false;
-      inputText.value = '';
+      inputText.value = ''; inputText.blur(); inputText.focus();
       inputText.focus();
       historyDiv.scrollTop = historyDiv.scrollHeight;
     });
