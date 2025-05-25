@@ -170,6 +170,7 @@
       historyDiv.appendChild(userMsg);
 
       const res = await fetch('/query-ai', { method: 'POST', body: formData });
+      inputText.value = '';
       const data = await res.json();
       const cleanResponse = data.response.replace(/<think>/gi, '').replace(/<\/think>/gi, '');
 
