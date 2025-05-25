@@ -33,7 +33,7 @@
 <body class="flex flex-col h-screen w-screen bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
 
   <!-- Header -->
-  <header class="flex justify-center items-center px-6 py-4 bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white shadow-md relative">
+  <header class="absolute top-0 left-0 flex items-center px-6 py-4 bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white shadow-md z-50">
     <div class="relative" id="modelDropdownWrapper">
       <button id="modelDropdownButton"
               class="flex items-center text-xl font-semibold px-4 py-1 border border-transparent bg-transparent text-gray-900 dark:text-white focus:outline-none cursor-pointer">
@@ -50,14 +50,14 @@
     </div>
     <input type="hidden" id="modelInput" name="model" />
     <button id="toggleDark"
-            class="absolute right-6 top-4 text-xl text-yellow-500 dark:text-yellow-300 bg-transparent hover:text-yellow-400 transition">
+            class="ml-4 text-xl text-yellow-500 dark:text-yellow-300 bg-transparent hover:text-yellow-400 transition">
       🌙
     </button>
   </header>
 
   <!-- Chat Area -->
-  <main class="flex-grow overflow-hidden flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <div class="w-full max-w-3xl flex flex-col px-4 py-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-400/40 scrollbar-thumb-rounded-md" id="conversationHistory"></div>
+  <main class="flex-grow overflow-hidden flex flex-col items-center pt-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div class="w-full max-w-3xl flex flex-col px-4 py-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-400/40 scrollbar-thumb-rounded-md pb-6" id="conversationHistory"></div>
   </main>
 
   <!-- Input Area -->
@@ -170,6 +170,7 @@
       historyDiv.appendChild(userMsg);
 
       const res = await fetch('/query-ai', { method: 'POST', body: formData });
+      inputText.value = '';
       const data = await res.json();
       const cleanResponse = data.response.replace(/<think>/gi, '').replace(/<\/think>/gi, '');
 
