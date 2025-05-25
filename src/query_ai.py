@@ -4,6 +4,7 @@ from ollama import Client
 
 conversation_history = []
 
+
 def get_ai_response(model: str, query: str) -> str:
     global conversation_history
 
@@ -23,6 +24,7 @@ def get_ai_response(model: str, query: str) -> str:
     else:
         return 'Something went wrong.'
 
+
 def get_installed_models() -> list:
     client = Client(
         host='http://localhost:11434',
@@ -36,4 +38,4 @@ def get_installed_models() -> list:
 
 # wow all hail https://github.com/ollama/ollama-python
 
-#print(response['message']['content'])
+# print(response['message']['content'])
