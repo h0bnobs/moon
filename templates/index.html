@@ -3,11 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch models and populate the dropdown
+            fetch('/get-models')
+                .then(response => response.json())
+                .then(data => {
+                    const dropdown = document.getElementById('modelDropdown');
+                    data.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model;
+                        option.textContent = model;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching models:', error));
+        });
+    </script>
 </head>
 <body>
-
-<h3>Welcome to deepseek running on the old pc!</h3>
-<img src="../static/r.png" style="width: 166px; height: 214px"><br>
-<input type="text">
+    <h3>Welcome to deepseek running on the old pc!</h3>
+    <img src="static/r.png" style="width: 166px; height: 214px"><br>
+    <label for="modelDropdown">Select a model:</label>
+    <select id="modelDropdown">
+        <option value="" disabled selected>Loading models...</option>
+    </select>
+    <br>
+    <input type="text">
 </body>
 </html>
