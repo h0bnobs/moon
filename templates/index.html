@@ -32,7 +32,7 @@
   <main class="flex-grow overflow-hidden flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="w-full max-w-3xl flex flex-col px-4 py-6 overflow-y-auto h-full"
          id="conversationHistory">
-      <!-- Messages appear here -->
+      <!-- Messages will appear here -->
     </div>
   </main>
 
@@ -42,7 +42,7 @@
       <textarea id="inputText" name="query" rows="3" placeholder="Send a message..." required
                 class="w-full border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg pr-14 p-4 resize-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
 
-      <!-- Submit Button -->
+      <!-- Submit Button (Circle) -->
       <button type="submit"
               id="submitBtn"
               class="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow transition disabled:opacity-50">
@@ -102,9 +102,12 @@
       if (!query) return;
 
       const formData = new FormData(e.target);
+      formData.append('model', dropdown.value); // ✅ Manually include model
+
       loading.classList.remove('hidden');
       submitBtn.disabled = true;
 
+      // Add user message
       const userMsg = document.createElement('div');
       userMsg.className = "mb-4 self-start bg-gray-300 dark:bg-gray-800 p-3 rounded-md";
       userMsg.innerHTML = `<strong class="block text-indigo-600 dark:text-indigo-400 mb-1">You:</strong><p>${query}</p>`;
