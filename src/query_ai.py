@@ -2,27 +2,30 @@ from ollama import chat
 from ollama import ChatResponse
 from ollama import Client
 
-# assuming the ai is running on localhost:11434
-# base_url = "http://192.168.5.228:11434/api/chat"
-def get_ai_response() -> str:
+conversation_history = []
+
+def get_ai_response(model: str, query: str) -> str:
+    global conversation_history
+
+    # Add the user's query to the conversation history
+    conversation_history.append({'role': 'user', 'content': query})
+
     client = Client(
-        host='http://192.168.5.228:11434',
+        host='http://localhost:11434',
         headers={'x-some-header': 'some-value'}
     )
-    response = client.chat(model='deepseek-r1:1.5b', messages=[
-        {
-            'role': 'user',
-            'content': 'Why is the sky blue?',
-        },
-    ])
+    response = client.chat(model=model, messages=conversation_history)
+
     if isinstance(response, ChatResponse):
+        # Add the AI's response to the conversation history
+        conversation_history.append({'role': 'assistant', 'content': response.message.content})
         return response.message.content
     else:
-        return 'something went wrong.'
+        return 'Something went wrong.'
 
 def get_installed_models() -> list:
     client = Client(
-        host='http://192.168.5.228:11434',
+        host='http://localhost:11434',
         headers={'x-some-header': 'some-value'}
     )
     s = client.list()["models"]
@@ -32,6 +35,5 @@ def get_installed_models() -> list:
     return models
 
 # wow all hail https://github.com/ollama/ollama-python
-get_ai_response()
 
 #print(response['message']['content'])

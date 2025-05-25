@@ -1,6 +1,6 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
-from query_ai import get_installed_models
+from query_ai import get_installed_models, get_ai_response
 
 app = Flask(__name__, static_folder='../static', template_folder='../templates')
 
@@ -12,12 +12,15 @@ def index() -> str:
     """
     return render_template('index.html')
 @app.route('/query-ai', methods=['POST'])
-def query_ai() -> str:
+def query_ai():
     """
     The route to handle AI queries.
-    :return: The render template of the AI query page.
+    :return: A JSON response with the AI's response.
     """
-    return render_template('index.html')
+    model = request.form.get('model')
+    query = request.form.get('query')
+    response = get_ai_response(model, query)
+    return jsonify(response=response)
 
 @app.route('/get-models', methods=['GET'])
 def get_models():
