@@ -2,23 +2,26 @@ from ollama import chat
 from ollama import ChatResponse
 from ollama import Client
 
-# assuming the ai is running on localhost:11434
-# base_url = "http://192.168.5.228:11434/api/chat"
+conversation_history = []
+
 def get_ai_response(model: str, query: str) -> str:
+    global conversation_history
+
+    # Add the user's query to the conversation history
+    conversation_history.append({'role': 'user', 'content': query})
+
     client = Client(
         host='http://192.168.5.228:11434',
         headers={'x-some-header': 'some-value'}
     )
-    response = client.chat(model=model, messages=[
-        {
-            'role': 'user',
-            'content': query,
-        },
-    ])
+    response = client.chat(model=model, messages=conversation_history)
+
     if isinstance(response, ChatResponse):
+        # Add the AI's response to the conversation history
+        conversation_history.append({'role': 'assistant', 'content': response.message.content})
         return response.message.content
     else:
-        return 'something went wrong.'
+        return 'Something went wrong.'
 
 def get_installed_models() -> list:
     client = Client(

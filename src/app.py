@@ -12,13 +12,15 @@ def index() -> str:
     """
     return render_template('index.html')
 @app.route('/query-ai', methods=['POST'])
-def query_ai() -> str:
+def query_ai():
     """
     The route to handle AI queries.
-    :return: The render template of the AI query page.
+    :return: A JSON response with the AI's response.
     """
-    print(get_ai_response(request.form.get('model'), request.form.get('query')))
-    return render_template('index.html')
+    model = request.form.get('model')
+    query = request.form.get('query')
+    response = get_ai_response(model, query)
+    return jsonify(response=response)
 
 @app.route('/get-models', methods=['GET'])
 def get_models():
