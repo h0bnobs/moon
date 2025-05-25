@@ -86,7 +86,6 @@
             }
           });
 
-          // Update title on selection change
           dropdown.addEventListener('change', () => {
             document.title = `DeepSeek - ${dropdown.value}`;
           });
@@ -110,8 +109,13 @@
       userMessage.className = "text-gray-800 dark:text-gray-100";
       historyDiv.appendChild(userMessage);
 
+      // Strip <think> tags before parsing markdown
+      const cleanResponse = data.response
+        .replace(/<think>/gi, '')
+        .replace(/<\/think>/gi, '');
+
       const aiMessage = document.createElement('div');
-      aiMessage.innerHTML = `<strong>AI:</strong> ${marked.parse(data.response)}`;
+      aiMessage.innerHTML = `<strong>AI:</strong> ${marked.parse(cleanResponse)}`;
       aiMessage.className = "prose prose-sm dark:prose-invert max-w-none";
       historyDiv.appendChild(aiMessage);
 
