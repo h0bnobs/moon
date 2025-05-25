@@ -25,8 +25,11 @@ def get_installed_models() -> list:
         host='http://192.168.5.228:11434',
         headers={'x-some-header': 'some-value'}
     )
-    print(client.list()["models"])
-    return client.list()["models"]
+    s = client.list()["models"]
+    models = []
+    for model in s:
+        models.append(model["model"])
+    return models
 
 # wow all hail https://github.com/ollama/ollama-python
 get_ai_response()

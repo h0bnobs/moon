@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify
 
 from query_ai import get_installed_models
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../static', template_folder='../templates')
 
 @app.route('/', methods=['GET'])
 def index() -> str:
@@ -17,7 +17,6 @@ def query_ai() -> str:
     The route to handle AI queries.
     :return: The render template of the AI query page.
     """
-
     return render_template('index.html')
 
 @app.route('/get-models', methods=['GET'])
