@@ -11,7 +11,7 @@ def get_ai_response(model: str, query: str) -> str:
     conversation_history.append({'role': 'user', 'content': query})
 
     client = Client(
-        host='http://192.168.5.228:11434',
+        host='http://localhost:11434',
         headers={'x-some-header': 'some-value'}
     )
     response = client.chat(model=model, messages=conversation_history)
@@ -25,7 +25,7 @@ def get_ai_response(model: str, query: str) -> str:
 
 def get_installed_models() -> list:
     client = Client(
-        host='http://192.168.5.228:11434',
+        host='http://localhost:11434',
         headers={'x-some-header': 'some-value'}
     )
     s = client.list()["models"]
