@@ -13,23 +13,27 @@
     .dark .prose strong { color: #e5e7eb; }
     .dark .prose code { color: #facc15; }
     .dark .prose a { color: #93c5fd; }
-    #modelDropdown {
-      appearance: none;
-      background: transparent;
-    }
   </style>
 </head>
 <body class="flex flex-col h-screen w-screen bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
 
   <!-- Header -->
   <header class="flex justify-center items-center px-6 py-4 bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white shadow-md relative">
-    <div class="flex items-center gap-2 relative">
-      <select id="modelDropdown"
-              class="text-xl font-semibold text-gray-900 dark:text-white focus:outline-none cursor-pointer pr-6"
-              onfocus="toggleArrow(true)" onblur="toggleArrow(false)">
-      </select>
-      <span id="dropdownArrow" class="absolute right-0 top-1 text-xl select-none pointer-events-none">▼</span>
+    <div class="relative" id="modelDropdownWrapper">
+      <button id="modelDropdownButton"
+              class="flex items-center text-xl font-semibold px-4 py-1 border border-transparent bg-transparent text-gray-900 dark:text-white focus:outline-none cursor-pointer">
+        <span id="selectedModel">Loading...</span>
+        <svg id="dropdownIcon" class="ml-2 w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <div id="modelDropdownMenu"
+           class="hidden absolute left-0 mt-2 w-full z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto">
+        <!-- Items inserted here -->
+      </div>
     </div>
+    <input type="hidden" id="modelInput" name="model" />
     <button id="toggleDark"
             class="absolute right-6 top-4 text-xl text-yellow-500 dark:text-yellow-300 bg-transparent hover:text-yellow-400 transition">
       🌙
@@ -38,9 +42,7 @@
 
   <!-- Chat Area -->
   <main class="flex-grow overflow-hidden flex flex-col items-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <div class="w-full max-w-3xl flex flex-col px-4 py-6 overflow-y-auto h-full"
-         id="conversationHistory">
-    </div>
+    <div class="w-full max-w-3xl flex flex-col px-4 py-6 overflow-y-auto h-full" id="conversationHistory"></div>
   </main>
 
   <!-- Input Area -->
@@ -50,14 +52,14 @@
                 class="w-full border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg pr-14 p-4 resize-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
 
       <!-- Submit Button -->
-      <button type="submit"
-              id="submitBtn"
+      <button type="submit" id="submitBtn"
               class="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow transition disabled:opacity-50">
-        ➤
+        ➔
       </button>
 
       <!-- Spinner -->
-      <div id="loading" class="hidden mt-2 text-center text-sm text-gray-500 dark:text-gray-300">
+      <div id="loading"
+           class="hidden absolute bottom-3 left-3 text-base text-gray-500 dark:text-gray-300 pointer-events-none">
         <span class="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full"></span>
         Thinking...
       </div>
@@ -67,15 +69,18 @@
   <script>
     const html = document.getElementById('html');
     const toggleBtn = document.getElementById('toggleDark');
-    const dropdown = document.getElementById('modelDropdown');
-    const dropdownArrow = document.getElementById('dropdownArrow');
+    const modelMenu = document.getElementById('modelDropdownMenu');
+    const modelButton = document.getElementById('modelDropdownButton');
+    const modelInput = document.getElementById('modelInput');
+    const selectedModelSpan = document.getElementById('selectedModel');
+    const dropdownIcon = document.getElementById('dropdownIcon');
     const historyDiv = document.getElementById('conversationHistory');
     const inputText = document.getElementById('inputText');
     const loading = document.getElementById('loading');
     const submitBtn = document.getElementById('submitBtn');
 
     function updateDarkModeIcon() {
-      toggleBtn.textContent = html.classList.contains('dark') ? '🌙' : '🌞';
+      toggleBtn.textContent = html.classList.contains('dark') ? '🌙' : '☀️';
     }
 
     toggleBtn.addEventListener('click', () => {
@@ -83,32 +88,49 @@
       updateDarkModeIcon();
     });
 
-    function toggleArrow(open) {
-      dropdownArrow.textContent = open ? '▶' : '▼';
+    function toggleDropdown(forceClose = false) {
+      const open = !forceClose && modelMenu.classList.contains('hidden');
+      modelMenu.classList.toggle('hidden', !open);
+      dropdownIcon.classList.toggle('rotate-180', open);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('modelDropdownWrapper').contains(e.target)) {
+        toggleDropdown(true);
+      }
+    });
+
+    function selectModel(model) {
+      selectedModelSpan.textContent = model;
+      modelInput.value = model;
+      toggleDropdown(true);
+      document.title = `DeepSeek - ${model}`;
+    }
+
+    function loadModels() {
       fetch('/get-models')
         .then(res => res.json())
         .then(data => {
+          modelMenu.innerHTML = '';
           data.models.forEach((model, i) => {
-            const opt = document.createElement('option');
-            opt.value = model;
-            opt.textContent = model;
-            dropdown.appendChild(opt);
-            if (i === 0) document.title = `DeepSeek - ${model}`;
-          });
-
-          dropdown.addEventListener('change', () => {
-            document.title = `DeepSeek - ${dropdown.value}`;
+            const item = document.createElement('div');
+            item.className = "px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100";
+            item.textContent = model;
+            item.addEventListener('click', () => selectModel(model));
+            modelMenu.appendChild(item);
+            if (i === 0) selectModel(model);
           });
         });
+    }
 
+    modelButton.addEventListener('click', () => toggleDropdown());
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadModels();
       updateDarkModeIcon();
       inputText.focus();
     });
 
-    // Submit form on Enter, newline on Shift+Enter
     inputText.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -122,7 +144,7 @@
       if (!query) return;
 
       const formData = new FormData(e.target);
-      formData.append('model', dropdown.value);
+      formData.append('model', modelInput.value);
 
       loading.classList.remove('hidden');
       submitBtn.disabled = true;
