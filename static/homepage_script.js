@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadModels() {
-        console.log('loadModels function called');
         fetch('/get-models')
             .then(res => res.json())
             .then(data => {

@@ -15,7 +15,6 @@ def index() -> str:
 
 @app.route('/query-ai', methods=['POST'])
 def query_ai():
-    print('here')
     model = request.form.get('model')
     query = request.form.get('query')
     history = session.get('history', [])
