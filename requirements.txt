@@ -1,2 +1,4 @@
 Flask
 ollama
+requests
+flask-session
