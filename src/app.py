@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, session
+from flask import Flask, render_template, jsonify, request, session, g
 from query_ai import get_installed_models, get_ai_response
 from flask_session import Session
 
@@ -6,6 +6,13 @@ app = Flask(__name__, static_folder='../static', template_folder='../templates')
 app.secret_key = 'your_secret_key'
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
+
+
+@app.before_request
+def clear_session_on_first_request():
+    if not hasattr(g, 'session_cleared'):
+        session.clear()
+        g.session_cleared = True
 
 
 @app.route('/', methods=['GET'])
