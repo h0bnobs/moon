@@ -73,10 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const query = inputText.value.trim();
         if (!query) return;
-        inputText.value = '';
         const formData = new FormData(e.target);
         formData.append('model', modelInput.value);
-
+        inputText.value = '';
         loading.classList.remove('hidden');
         submitBtn.disabled = true;
 
