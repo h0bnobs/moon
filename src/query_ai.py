@@ -19,7 +19,11 @@ def get_installed_models() -> list:
     Get a list of the installed AI models on the host.
     :return: list of installed models.
     """
-    return [model["model"] for model in get_client().list()["models"]]
+    s = get_client().list()["models"]
+    models = []
+    for model in s:
+        models.append(model["model"])
+    return models
 
 
 def get_client() -> Client:
