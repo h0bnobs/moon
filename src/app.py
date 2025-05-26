@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, session, g
 from query_ai import get_installed_models, get_ai_response
+from scrape_ollama import get_model_names_and_sizes, get_family_names
 from flask_session import Session
 
 app = Flask(__name__, static_folder='../static', template_folder='../templates')
@@ -34,6 +35,11 @@ def query_ai():
 def get_models():
     models = get_installed_models()
     return jsonify(models=models)
+
+
+@app.route('/available-models', methods=['GET'])
+def available_models():
+    return render_template('available_models.html', models=get_model_names_and_sizes(get_family_names()))
 
 
 if __name__ == "__main__":
