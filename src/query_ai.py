@@ -1,41 +1,33 @@
-from ollama import chat
-from ollama import ChatResponse
 from ollama import Client
 
-conversation_history = []
 
-
-def get_ai_response(model: str, query: str) -> str:
-    global conversation_history
-
-    # Add the user's query to the conversation history
+def get_ai_response(model: str, query: str, conversation_history: list) -> tuple[str, list]:
+    """
+    Update the current conversation history and query the AI model using the history and new prompt.
+    :param model: The AI model name
+    :param query: The user's input/query
+    :param conversation_history: List of previous messages
+    :return: A tuple containing the AI response and updated conversation history
+    """
     conversation_history.append({'role': 'user', 'content': query})
-
-    client = Client(
-        host='http://localhost:11434',
-        headers={'x-some-header': 'some-value'}
-    )
-    response = client.chat(model=model, messages=conversation_history)
-
-    if isinstance(response, ChatResponse):
-        # Add the AI's response to the conversation history
-        conversation_history.append({'role': 'assistant', 'content': response.message.content})
-        return response.message.content
-    else:
-        return 'Something went wrong.'
+    response = get_client().chat(model=model, messages=conversation_history)
+    return response.message.content, conversation_history
 
 
 def get_installed_models() -> list:
-    client = Client(
+    """
+    Get a list of the installed AI models on the host.
+    :return: list of installed models.
+    """
+    return [model["model"] for model in get_client().list()["models"]]
+
+
+def get_client() -> Client:
+    """
+    Get an ollama client object.
+    :return: An ollama client object.
+    """
+    return Client(
         host='http://localhost:11434',
         headers={'x-some-header': 'some-value'}
     )
-    s = client.list()["models"]
-    models = []
-    for model in s:
-        models.append(model["model"])
-    return models
-
-# wow all hail https://github.com/ollama/ollama-python
-
-# print(response['message']['content'])
