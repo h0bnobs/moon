@@ -22,6 +22,7 @@ def get_installed_models() -> list:
     s = get_client().list()["models"]
     models = []
     for model in s:
+        print(model)
         models.append(model["model"])
     return models
 
