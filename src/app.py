@@ -10,9 +10,9 @@ Session(app)
 
 @app.before_request
 def clear_session_on_first_request():
-    if not hasattr(g, 'session_cleared'):
+    if not session.get('session_cleared', False):
         session.clear()
-        g.session_cleared = True
+        session['session_cleared'] = True
 
 
 @app.route('/', methods=['GET'])
